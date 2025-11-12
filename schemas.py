@@ -11,38 +11,28 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
-
-class User(BaseModel):
+class Tee(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
-
-class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
+    T-shirts collection schema
+    Collection name: "tee"
     """
     title: str = Field(..., description="Product title")
+    slug: str = Field(..., description="URL-friendly identifier")
     description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+    price: float = Field(..., ge=0, description="Price in USD")
+    colors: List[str] = Field(default_factory=list, description="Available colors")
+    image_url: Optional[str] = Field(None, description="Primary image URL")
+    release_year: int = Field(..., ge=2000, le=2100, description="Release year")
+    release_month: int = Field(..., ge=1, le=12, description="Release month (1-12)")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Subscription(BaseModel):
+    """
+    Email subscriptions for new batch releases
+    Collection name: "subscription"
+    """
+    email: EmailStr = Field(..., description="Subscriber email")
+    name: Optional[str] = Field(None, description="Subscriber name")
+    source: Optional[str] = Field("website", description="Signup source")
